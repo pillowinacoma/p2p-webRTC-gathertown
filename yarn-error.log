@@ -1,0 +1,40 @@
+Arguments: 
+  /Users/aurelien/.nvm/versions/node/v14.17.3/bin/node /usr/local/Cellar/yarn/1.22.11/libexec/bin/yarn.js run start
+
+PATH: 
+  /usr/local/opt/curl/bin:/Users/aurelien/perl5/bin:/Users/aurelien/.nvm/versions/node/v14.17.3/bin:/usr/local/opt/openjdk@11/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands
+
+Yarn version: 
+  1.22.11
+
+Node version: 
+  14.17.3
+
+Platform: 
+  darwin x64
+
+Trace: 
+  SyntaxError: /Users/aurelien/Documents/workspaceCours/tiw8-tp1-2021/package.json: Unexpected string in JSON at position 153
+      at JSON.parse (<anonymous>)
+      at /usr/local/Cellar/yarn/1.22.11/libexec/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/Cellar/yarn/1.22.11/libexec/lib/cli.js:310:30)
+      at /usr/local/Cellar/yarn/1.22.11/libexec/lib/cli.js:321:13
+
+npm manifest: 
+  {
+      "name": "tiw8-tp1-2021",
+      "scripts": {
+    "start": "node server/index.js",
+    "test": "echo \"Error: pas de tests pour le moment\" && exit 1"
+  }
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

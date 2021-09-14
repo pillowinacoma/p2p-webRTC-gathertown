@@ -25,6 +25,11 @@ module.exports = {
         loader: "source-map-loader",
       },
       {
+        test: /\.(png|svg|jpg|gif)$/,
+        loader: "file-loader",
+        options: { name: "/static/[name].[ext]" },
+      },
+      {
         test: /\.css$/,
         loader: "css-loader",
       },

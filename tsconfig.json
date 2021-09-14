@@ -9,5 +9,6 @@
     "sourceMap": true,
     "target": "es5"
   },
-  "include": ["./client/**/**/*"]
+  "include": ["client", "index.d.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"]
 }

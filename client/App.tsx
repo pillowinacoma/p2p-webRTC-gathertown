@@ -1,6 +1,5 @@
-import * as React from "react";
-// Import de l'image
-import LOGO from "./logo.png";
+import * as React from 'react'
+import LOGO from './logo.png'
 
 export interface HelloWorldProps {
   userName: string;
@@ -8,9 +7,16 @@ export interface HelloWorldProps {
 }
 export const App = (props: HelloWorldProps) => (
   <>
-  <h1>
-    Hi {props.userName} from React! Welcome to {props.lang}!
-  </h1>
-  <img src={LOGO} alt="Logo" />;
+    <h1>
+      Hi
+      {' '}
+      {props.userName}
+      {' '}
+      from React! Welcome to
+      {' '}
+      {props.lang}
+      !
+    </h1>
+    <img src={LOGO} alt="Logo" />
   </>
-);
+)

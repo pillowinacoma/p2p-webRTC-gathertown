@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const ESLintPlugin = require("eslint-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 module.exports = {
   entry: "./client/index.tsx",
@@ -17,7 +18,7 @@ module.exports = {
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
-        loader: "awesome-typescript-loader",
+        loader: "ts-loader",
       },
       {
         enforce: "pre",
@@ -42,6 +43,9 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: "./client/yourfile.css",
+    }),
+    new ESLintPlugin({
+      extensions: ["js", "jsx", "ts", "tsx"],
     }),
   ],
 };

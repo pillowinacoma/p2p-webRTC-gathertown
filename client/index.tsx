@@ -4,8 +4,8 @@ import { Windmill } from '@windmill/react-ui'
 import { App } from './App'
 
 ReactDOM.render(
-  <Windmill>
-    <App userName="Tiw8-TP1" lang="TypeScript" />
-  </Windmill>,
-  document.getElementById('root')
+    <Windmill>
+        <App userName="Tiw8-TP3" lang="TypeScript" />
+    </Windmill>,
+    document.getElementById('root')
 )

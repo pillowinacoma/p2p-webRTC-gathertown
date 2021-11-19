@@ -1,4 +1,6 @@
 node_modules
 dist
 yarn-error.log
-old.eslintrc.js
+npm-debug.log
+.DS_Store
+/*.env

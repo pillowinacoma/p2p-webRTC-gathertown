@@ -1,5 +1,5 @@
 import * as React from 'react'
-import LOGO from './logo.png'
+import { Board } from './components/Board'
 
 export interface HelloWorldProps {
     userName: string
@@ -11,7 +11,7 @@ export const App: React.FC<HelloWorldProps> = (props) => {
             <h1>
                 Hi {props.userName} from React! Welcome to {props.lang}!
             </h1>
-            <img src={LOGO} alt="Logo" />
+            <Board></Board>
         </>
     )
 }

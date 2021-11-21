@@ -14,7 +14,22 @@ module.exports = windmill({
         // content: ["./src/**/*.jsx", "./public/index.html"],
         content: ['./client/**/*.tsx', './client/index.html'],
         options: {
-            safelist: [],
+            safelist: [
+                'w-1/2',
+                'w-1/3',
+                'w-1/4',
+                'w-1/5',
+                'w-1/6',
+                'w-1/7',
+                'w-1/8',
+                'w-1/9',
+                'w-1/10',
+                'w-1/11',
+                'w-1/12',
+                'w-1/13',
+                'w-1/14',
+                'w-1/15',
+            ],
         },
     },
     theme: {

@@ -1,11 +1,13 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { Windmill } from '@windmill/react-ui'
+import { Provider } from 'react-redux'
+import { store } from './store/index'
+import './style.css'
 import { App } from './App'
 
 ReactDOM.render(
-    <Windmill>
+    <Provider store={store}>
         <App userName="Tiw8-TP3" lang="TypeScript" />
-    </Windmill>,
+    </Provider>,
     document.getElementById('root')
 )

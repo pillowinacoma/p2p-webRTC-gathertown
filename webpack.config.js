@@ -37,7 +37,10 @@ module.exports = (env, argv) => {
                 {
                     test: /\.(png|svg|jpg|gif)$/,
                     loader: 'file-loader',
-                    options: { name: '/static/[name].[ext]' },
+                    options: {
+                        name: '[name].[ext]',
+                        outputPath: './dist/',
+                    },
                 },
                 {
                     test: /\.css$/i,

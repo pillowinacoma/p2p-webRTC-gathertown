@@ -7,7 +7,7 @@ import { App } from './App'
 
 ReactDOM.render(
     <Provider store={store}>
-        <App userName="Tiw8-TP3" lang="TypeScript" />
+        <App />
     </Provider>,
     document.getElementById('root')
 )

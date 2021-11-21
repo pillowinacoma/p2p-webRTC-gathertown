@@ -1,22 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-canvas {
-    touch-action: none;
-}
-
-/* .boardgrid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
-}
-
-#home {
-    height: 48px;
-    width: 48px;
-    background: url(../static/ModernTiles_Free/Interiors_free/48x48/Interiors_free_48x48.png)
-        0 0;
-} */

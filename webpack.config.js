@@ -2,6 +2,7 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const WebpackBundleAnalyzer =
     require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
@@ -61,6 +62,7 @@ module.exports = (env, argv) => {
             new ESLintPlugin({
                 extensions: ['js', 'jsx', 'ts', 'tsx'],
             }),
+            new NodePolyfillPlugin(),
             new WebpackBundleAnalyzer({
                 analyzerMode: 'disabled',
                 generateStatsFile: true,

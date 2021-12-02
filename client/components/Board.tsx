@@ -5,14 +5,26 @@ import { AppDispatch } from '../store'
 import { movePlayer } from '../slices/boardSlice'
 import { useAppSelector } from '../hooks'
 import samplemap from '../img/samplemap_16.png'
-import alex from '../img/Alex_idle_16x16.png'
+import alex from '../img/Alex.png'
+import bob from '../img/Bob.png'
+import adam from '../img/Adam.png'
+import amelia from '../img/Amelia.png'
 import { useCallback, useEffect } from 'react'
+import { AvatarPicker } from './AvatarPicker'
 
 export const Board: React.FC = () => {
     const board = useAppSelector((state) => state.board)
     const playerPosition: [number, number] = useAppSelector(
         (state) => state.playerPosition
     )
+    const remotePlayerPosition: [number, number] = useAppSelector(
+        (state) => state.remotePlayerPosition
+    )
+    const playerAvatar: string = useAppSelector((state) => state.playerAvatar)
+    const remotePlayerAvatar: string = useAppSelector(
+        (state) => state.remotePlayerAvatar
+    )
+
     const dispatch = useDispatch<AppDispatch>()
 
     const keyDownHandler = useCallback(
@@ -60,18 +72,28 @@ export const Board: React.FC = () => {
         'background-repeat': 'no-repeat',
     }
 
-    const alexStyle = {
-        display: 'block',
-        width: '16px',
-        height: '32px',
-        background: 'url(' + alex + ') -48px 0',
-        'background-repeat': 'no-repeat',
-    }
-
     const cellStyle = {
         width: '16px',
         padding: '0px',
         'text-align': 'center',
+    }
+
+    const avatarImg = (name: string) => {
+        switch (name) {
+            case 'Adam':
+                return `${adam}`
+                break
+            case 'Amelia':
+                return `${amelia}`
+                break
+            case 'Alex':
+                return `${alex}`
+                break
+            case 'Bob':
+                return `${bob}`
+                break
+        }
+        return ''
     }
 
     const displayPlayers = () => {
@@ -79,7 +101,20 @@ export const Board: React.FC = () => {
         const grid = []
         for (i = 0; i < board.width * board.height; i++) {
             if (i === playerPosition[1] * board.width + playerPosition[0]) {
-                grid.push(<div style={alexStyle} key={i}></div>)
+                grid.push(
+                    <div style={cellStyle} key={i}>
+                        <img src={avatarImg(playerAvatar)}></img>
+                    </div>
+                )
+            } else if (
+                i ===
+                remotePlayerPosition[1] * board.width + remotePlayerPosition[0]
+            ) {
+                grid.push(
+                    <div style={cellStyle} key={i}>
+                        <img src={avatarImg(remotePlayerAvatar)}></img>
+                    </div>
+                )
             } else {
                 grid.push(<div style={cellStyle} key={i}></div>)
             }
@@ -95,8 +130,15 @@ export const Board: React.FC = () => {
     }, [keyDownHandler])
 
     return (
-        <>
-            <div style={boardStyle}>{displayPlayers()}</div>
-        </>
+        <div className="flex flex-row space-x-2">
+            <div className="flew-grow-0" style={boardStyle}>
+                {displayPlayers()}
+            </div>
+            <div className="flex-grow-0 flex-col space-y-2">
+                <AvatarPicker></AvatarPicker>
+                <div className="item h-48">Video1 Placeholder</div>
+                <div className="item h-48">Video2 Placeholder</div>
+            </div>
+        </div>
     )
 }

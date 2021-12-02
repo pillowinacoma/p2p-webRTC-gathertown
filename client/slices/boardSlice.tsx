@@ -3,6 +3,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 // Define a type for the slice state
 interface AppState {
     playerPosition: [number, number]
+    playerAvatar: string
+    remotePlayerPosition: [number, number]
+    remotePlayerAvatar: string
     board: {
         width: number
         height: number
@@ -13,6 +16,9 @@ interface AppState {
 // Define the initial state using that type
 const initialState: AppState = {
     playerPosition: [10, 24],
+    playerAvatar: '',
+    remotePlayerPosition: [0, 0],
+    remotePlayerAvatar: '',
     board: {
         width: 60,
         height: 60,
@@ -35,10 +41,24 @@ export const boardSlice = createSlice({
                 return { payload, meta: { propagate } }
             },
         },
+        setAvatar: {
+            reducer(state, action: PayloadAction<[string, string]>) {
+                console.log(action)
+                if (action.payload[1] === 'local') {
+                    state.playerAvatar = action.payload[0]
+                }
+                if (action.payload[1] === 'remote') {
+                    state.remotePlayerAvatar = action.payload[0]
+                }
+            },
+            prepare(payload: [string, string], propagate: boolean) {
+                return { payload, meta: { propagate } }
+            },
+        },
     },
 })
 
-export const { movePlayer } = boardSlice.actions
+export const { movePlayer, setAvatar } = boardSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 // export const selectCount = (state: RootState) => state.slidesApp.value

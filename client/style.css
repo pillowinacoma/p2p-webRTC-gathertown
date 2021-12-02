@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.item {
+    @apply bg-indigo-700
+		text-gray-100
+		min-w-full
+		h-12
+		w-12
+		rounded;
+}
+
+button {
+    @apply border-gray-400
+		border-2
+		h-12
+		w-12
+		p-0
+		content-center
+		rounded-md;
+}
+
+.selected {
+    @apply border-indigo-600
+		border-4 
+		rounded-md;
+}

@@ -1,17 +1,17 @@
 import { AnyAction, Dispatch, Middleware } from 'redux'
-import { io } from 'socket.io-client'
+import * as io from 'socket.io-client'
 
-const socket = io()
+const socket = io.connect()
 
 export const actionMiddleware: Middleware<Dispatch> =
-  () => (next) => (action: AnyAction) => {
-    if (action.meta) {
-      if (action.type === 'board/movePlayer') {
-        socket.emit('movePlayer', {
-          type: 'movePlayer',
-          value: action.payload
-        })
+    () => (next) => (action: AnyAction) => {
+        if (action.meta) {
+            if (action.type === 'board/movePlayer') {
+                socket.emit('movePlayer', {
+                    type: 'movePlayer',
+                    value: action.payload,
+                })
+            }
+            return next(action)
+        }
     }
-    return next(action)
-  }
-}

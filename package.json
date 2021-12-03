@@ -4,7 +4,7 @@
     "start": "node server/index.js",
     "build": "webpack --mode=production",
     "watch": "webpack --watch",
-    "dev": "webpack serve --open",
+    "dev": "webpack --mode development & nodemon server/index.js",
     "lint": "eslint 'client/**/*.tsx'",
     "test": "echo \"Error: pas de tests pour le moment\" && exit 1"
   },
@@ -22,6 +22,7 @@
     "express": "^4.17.1",
     "html-webpack-plugin": "^5.3.2",
     "mini-css-extract-plugin": "^2.3.0",
+    "nodemon": "^2.0.15",
     "postcss-preset-env": "^6.7.0",
     "react": "^17.0.2",
     "react-device-detect": "^2.1.2",
@@ -34,7 +35,8 @@
     "socket.io": "^4.3.1",
     "socket.io-client": "^4.4.0",
     "source-map-loader": "^3.0.0",
-    "tailwindcss": "^2.2.15"
+    "tailwindcss": "^2.2.15",
+    "ts-node": "^10.4.0"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.3.4",

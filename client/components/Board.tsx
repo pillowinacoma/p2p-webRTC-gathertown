@@ -29,8 +29,8 @@ export const Board: React.FC = () => {
 
     const keyDownHandler = useCallback(
         (event) => {
-            console.log(event.code)
-            console.log(playerPosition)
+            // console.log(event.code)
+            // console.log(playerPosition)
             let newPosition = playerPosition
             if (event.code === 'ArrowUp') {
                 newPosition = [

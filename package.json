@@ -4,7 +4,7 @@
     "start": "node server/index.js",
     "build": "webpack --mode=production",
     "watch": "webpack --watch",
-    "dev": "webpack --mode development & nodemon server/index.js",
+    "dev": "webpack --mode=development & nodemon server/index.js",
     "lint": "eslint 'client/**/*.tsx'",
     "test": "echo \"Error: pas de tests pour le moment\" && exit 1"
   },
@@ -34,6 +34,7 @@
     "redux": "^4.1.1",
     "redux-devtools-extension": "^2.13.9",
     "redux-logger": "^3.0.6",
+    "simple-peer": "^9.11.0",
     "socket.io": "^4.3.1",
     "socket.io-client": "^4.4.0",
     "source-map-loader": "^3.0.0",

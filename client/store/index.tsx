@@ -5,7 +5,7 @@ import { actionMiddleware } from '../middleware/socketMiddleware'
 
 export const store = configureStore({
     reducer: boardReducer,
-    middleware: [actionMiddleware, logger],
+    middleware: [actionMiddleware],
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

@@ -20,8 +20,9 @@ export const AvatarPicker: React.FC = () => {
     const avatarSelected = useCallback(
         (event) => {
             // console.log(event)
-            const name = event.currentTarget.id
-            dispatch(setAvatar([name, 'local'], true))
+            const avatar = event.currentTarget.id
+            const local = true
+            dispatch(setAvatar({ avatar, local }, true))
         },
         [playerAvatar]
     )

@@ -33,32 +33,48 @@ export const boardSlice = createSlice({
     reducers: {
         // Use the PayloadAction type to declare the contents of `action.payload`
         movePlayer: {
-            reducer(state, action: PayloadAction<[number, number]>) {
-                console.log(action)
-                state.playerPosition = action.payload
+            reducer(state, action: PayloadAction<movePlayerAction>) {
+                if (action.payload.local) {
+                    state.playerPosition = action.payload.position
+                } else {
+                    state.remotePlayerPosition = action.payload.position
+                    console.log('REMOTE MOVE')
+                }
+                return state
             },
-            prepare(payload: [number, number], propagate: boolean) {
-                return { payload, meta: { propagate } }
+            prepare(payload: movePlayerAction, propagate: boolean) {
+                return {
+                    payload: payload,
+                    meta: { propagate },
+                }
             },
         },
         setAvatar: {
-            reducer(state, action: PayloadAction<[string, string]>) {
-                console.log(action)
-                if (action.payload[1] === 'local') {
-                    state.playerAvatar = action.payload[0]
+            reducer(state, action: PayloadAction<setAvatarAction>) {
+                if (action.payload.local) {
+                    state.playerAvatar = action.payload.avatar
+                } else {
+                    state.remotePlayerAvatar = action.payload.avatar
+                    console.log('REMOTE AVATAR')
                 }
-                if (action.payload[1] === 'remote') {
-                    state.remotePlayerAvatar = action.payload[0]
-                }
+                return state
             },
-            prepare(payload: [string, string], propagate: boolean) {
+            prepare(payload: setAvatarAction, propagate: boolean) {
+                return { payload, meta: { propagate } }
+            },
+        },
+        salut: {
+            reducer: () => {
+                // console.log('SALUT')
+            },
+            prepare: (payload: string, propagate: boolean) => {
                 return { payload, meta: { propagate } }
             },
         },
     },
 })
 
-export const { movePlayer, setAvatar } = boardSlice.actions
+export const { movePlayer, setAvatar, salut } = boardSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 // export const selectCount = (state: RootState) => state.slidesApp.value

@@ -2,7 +2,7 @@
 import * as React from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../store'
-import { movePlayer } from '../slices/boardSlice'
+import { movePlayer, salut } from '../slices/boardSlice'
 import { useAppSelector } from '../hooks'
 import samplemap from '../img/samplemap_16.png'
 import alex from '../img/Alex.png'
@@ -56,26 +56,26 @@ export const Board: React.FC = () => {
                     playerPosition[1],
                 ]
             }
-            console.log(newPosition)
-            dispatch(movePlayer(newPosition, false))
+            // console.log(newPosition)
+            dispatch(movePlayer({ position: newPosition, local: true }, true))
         },
         [playerPosition]
     )
 
     const boardStyle = {
         display: 'grid',
-        'grid-template-columns': 'repeat(60, 16px)',
-        'grid-template-rows': 'repeat(60, 16px)',
-        'grid-column-gap': '0px',
-        'grid-row-gap': '0px',
+        gridTemplateColumns: 'repeat(60, 16px)' as const,
+        gridTemplateRows: 'repeat(60, 16px)' as const,
+        gridColumnGap: '0px' as const,
+        gridRowGap: '0px' as const,
         backgroundImage: 'url(' + samplemap + ')',
-        'background-repeat': 'no-repeat',
+        backgroundRepeat: 'no-repeat' as const,
     }
 
     const cellStyle = {
         width: '16px',
         padding: '0px',
-        'text-align': 'center',
+        textAlign: 'center' as const,
     }
 
     const avatarImg = (name: string) => {

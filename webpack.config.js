@@ -8,6 +8,11 @@ const WebpackBundleAnalyzer =
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 module.exports = (env, argv) => {
     return {
+        watch: argv.mode !== 'production',
+        watchOptions: {
+            poll: true,
+            ignored: /node_modules/,
+        },
         entry: './client/index.tsx',
         target: 'web',
         mode: 'development',

@@ -11,6 +11,8 @@ interface AppState {
         height: number
         tiles: Tile[]
     }
+    stream: MediaProvider
+    remoteStream: MediaProvider
 }
 
 // Define the initial state using that type
@@ -24,6 +26,8 @@ const initialState: AppState = {
         height: 60,
         tiles: [], // unused for now, could be useful for collision management
     },
+    stream: undefined,
+    remoteStream: undefined,
 }
 
 export const boardSlice = createSlice({
@@ -38,7 +42,6 @@ export const boardSlice = createSlice({
                     state.playerPosition = action.payload.position
                 } else {
                     state.remotePlayerPosition = action.payload.position
-                    console.log('REMOTE MOVE')
                 }
                 return state
             },
@@ -55,7 +58,6 @@ export const boardSlice = createSlice({
                     state.playerAvatar = action.payload.avatar
                 } else {
                     state.remotePlayerAvatar = action.payload.avatar
-                    console.log('REMOTE AVATAR')
                 }
                 return state
             },
@@ -63,18 +65,22 @@ export const boardSlice = createSlice({
                 return { payload, meta: { propagate } }
             },
         },
-        salut: {
-            reducer: () => {
-                // console.log('SALUT')
+        setStream: {
+            reducer: (state, action: PayloadAction<MediaProvider>) => {
+                state.stream = action.payload
             },
-            prepare: (payload: string, propagate: boolean) => {
+            prepare: (payload: MediaProvider, propagate: boolean) => {
                 return { payload, meta: { propagate } }
             },
+        },
+        setRemoteStream: (state, action: PayloadAction<MediaProvider>) => {
+            state.remoteStream = action.payload
         },
     },
 })
 
-export const { movePlayer, setAvatar, salut } = boardSlice.actions
+export const { movePlayer, setAvatar, setStream, setRemoteStream } =
+    boardSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 // export const selectCount = (state: RootState) => state.slidesApp.value

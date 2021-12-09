@@ -2,7 +2,7 @@ import { AnyAction, Dispatch, Middleware } from 'redux'
 import * as io from 'socket.io-client'
 import SimplePeer, { SignalData } from 'simple-peer'
 import { store } from '../store'
-import { movePlayer, setAvatar } from '../slices/boardSlice'
+import { movePlayer, setAvatar, setRemoteStream } from '../slices/boardSlice'
 
 const socket = io.connect()
 const useTrickle = true
@@ -70,7 +70,8 @@ socket.on('peer', (peerInfo) => {
     })
 
     peer.on('stream', (stream): void => {
-        console.log('got stream ' + stream)
+        store.dispatch(setRemoteStream(stream))
+        console.log('got stream ')
     })
     peerId = peerInfo.peerId
     connectedPeers.set(peerInfo.peerId, peer)
@@ -78,22 +79,27 @@ socket.on('peer', (peerInfo) => {
 
 export const actionMiddleware: Middleware<Dispatch> =
     () => (next) => (action: AnyAction) => {
-        if (action.meta?.propagate) {
-            if (action.type === 'board/movePlayer') {
+        const { meta, type, payload } = action
+        const [sliceName, reducer] = type.split('/')
+
+        if (meta?.propagate) {
+            if (sliceName === 'board') {
                 const message = JSON.stringify({
-                    type: action.type.split('/')[1],
-                    payload: action.payload,
+                    type: reducer,
+                    payload,
                 })
-                peerId && connectedPeers.get(peerId).send(message)
-            } else if (action.type === 'board/setAvatar') {
-                const message = JSON.stringify({
-                    type: action.type.split('/')[1],
-                    payload: action.payload,
-                })
-                peerId && connectedPeers.get(peerId).send(message)
-            } else {
-                console.log('actionMiddleware')
+
+                if (peerId) {
+                    if (reducer !== 'setStream')
+                        connectedPeers.get(peerId).send(message)
+                    else {
+                        console.log(payload)
+
+                        connectedPeers.get(peerId).addStream(payload)
+                    }
+                }
             }
         }
+
         return next(action)
     }

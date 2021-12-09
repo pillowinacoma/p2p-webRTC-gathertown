@@ -2,7 +2,7 @@
 import * as React from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../store'
-import { movePlayer, salut } from '../slices/boardSlice'
+import { movePlayer } from '../slices/boardSlice'
 import { useAppSelector } from '../hooks'
 import samplemap from '../img/samplemap_16.png'
 import alex from '../img/Alex.png'
@@ -11,6 +11,7 @@ import adam from '../img/Adam.png'
 import amelia from '../img/Amelia.png'
 import { useCallback, useEffect } from 'react'
 import { AvatarPicker } from './AvatarPicker'
+import VideoChat from './VideoChat'
 
 export const Board: React.FC = () => {
     const board = useAppSelector((state) => state.board)
@@ -136,7 +137,9 @@ export const Board: React.FC = () => {
             </div>
             <div className="flex-grow-0 flex-col space-y-2">
                 <AvatarPicker></AvatarPicker>
-                <div className="item h-48">Video1 Placeholder</div>
+                <div className="item h-48">
+                    <VideoChat />
+                </div>
                 <div className="item h-48">Video2 Placeholder</div>
             </div>
         </div>

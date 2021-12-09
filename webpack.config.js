@@ -10,7 +10,7 @@ module.exports = (env, argv) => {
     return {
         watch: argv.mode !== 'production',
         watchOptions: {
-            poll: true,
+            poll: 10,
             ignored: /node_modules/,
         },
         entry: './client/index.tsx',

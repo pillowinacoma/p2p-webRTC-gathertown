@@ -3,9 +3,10 @@
 @tailwind utilities;
 
 .item {
-    @apply bg-indigo-700
+    @apply bg-rose-500
 		text-gray-100
 		min-w-full
+		min-h-full
 		h-12
 		w-12
 		rounded;

@@ -52,14 +52,12 @@ socket.on('peer', (peerInfo) => {
 
         payload.local = false
 
-        console.log(`${type}|${payload}`)
+        // console.log(`${type}|${payload}`)
         switch (type) {
             case 'movePlayer':
-                // console.log('Recieved : movePlayer', payload)
                 store.dispatch(movePlayer(<movePlayerAction>payload, false))
                 break
             case 'setAvatar':
-                // console.log('Recieved : setAvatar', payload)
                 store.dispatch(setAvatar(<setAvatarAction>payload, false))
                 break
             default:
@@ -70,6 +68,10 @@ socket.on('peer', (peerInfo) => {
     })
 
     peer.on('stream', (stream): void => {
+        stream.addEventListener('inactive', () =>
+            store.dispatch(setRemoteStream(undefined))
+        )
+
         store.dispatch(setRemoteStream(stream))
         console.log('got stream ')
     })
@@ -90,12 +92,19 @@ export const actionMiddleware: Middleware<Dispatch> =
                 })
 
                 if (peerId) {
-                    if (reducer !== 'setStream')
-                        connectedPeers.get(peerId).send(message)
-                    else {
-                        console.log(payload)
-
-                        connectedPeers.get(peerId).addStream(payload)
+                    switch (reducer) {
+                        case 'movePlayer':
+                            connectedPeers.get(peerId).send(message)
+                            break
+                        case 'setAvatar':
+                            connectedPeers.get(peerId).send(message)
+                            break
+                        case 'setStream':
+                            connectedPeers.get(peerId).addStream(payload)
+                            break
+                        case 'breakStream':
+                            connectedPeers.get(peerId).removeStream(payload)
+                            break
                     }
                 }
             }

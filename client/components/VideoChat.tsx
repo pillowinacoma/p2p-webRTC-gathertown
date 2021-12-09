@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useAppSelector } from '../hooks'
-import { setStream } from '../slices/boardSlice'
+import { breakStream, setStream } from '../slices/boardSlice'
 import { AppDispatch } from '../store'
 
 const VideoChat: FC = () => {
@@ -25,24 +25,28 @@ const VideoChat: FC = () => {
         return remoteStream
     }
     useEffect(() => {
+        console.log(remoteStream)
+
         gotRemoteStream(remoteStream)
     }, [remoteStream])
+    useEffect(() => {
+        gotStream(localStream)
+    }, [localStream])
 
-    const start = () => {
-        const videoStream = navigator.mediaDevices
+    const start = async () => {
+        const videoStream = await navigator.mediaDevices
             .getUserMedia({
                 audio: true,
                 video: true,
             })
-            .then(gotStream)
             .then((stream) => {
                 dispatch(setStream(stream, true))
+                return stream
             })
             .catch((e) => {
                 console.log(e)
                 alert('getUserMedia() error:' + e.name)
             })
-        gotStream(localStream)
         return videoStream
     }
     const call = async () => {
@@ -53,25 +57,39 @@ const VideoChat: FC = () => {
         setCall(false)
         setHangup(true)
     }
+    const cut = () => {
+        dispatch(breakStream(localStream, true))
+    }
     return (
         <>
             <div>
-                <video ref={localVideoRef} autoPlay muted>
-                    <track
-                        kind="captions"
-                        srcLang="en"
-                        label="english_captions"
-                    />
-                </video>
-                <video ref={remoteVideoRef} autoPlay muted>
-                    <track
-                        kind="captions"
-                        srcLang="en"
-                        label="english_captions"
-                    />
-                </video>
+                <div>
+                    Moi
+                    <video ref={localVideoRef} autoPlay muted>
+                        <track
+                            kind="captions"
+                            srcLang="en"
+                            label="english_captions"
+                        />
+                    </video>
+                </div>
+                <div>
+                    Autrui
+                    <video ref={remoteVideoRef} autoPlay>
+                        <track
+                            kind="captions"
+                            srcLang="en"
+                            label="english_captions"
+                        />
+                    </video>
+                </div>
             </div>
-            <button onClick={() => call()}>start</button>
+            <button className="bg-coolGray-800" onClick={() => call()}>
+                start
+            </button>
+            <button className="bg-coolGray-800" onClick={() => cut()}>
+                end
+            </button>
         </>
     )
 }

@@ -140,7 +140,6 @@ export const Board: React.FC = () => {
                 <div className="item h-48">
                     <VideoChat />
                 </div>
-                <div className="item h-48">Video2 Placeholder</div>
             </div>
         </div>
     )

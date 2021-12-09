@@ -76,11 +76,24 @@ export const boardSlice = createSlice({
         setRemoteStream: (state, action: PayloadAction<MediaProvider>) => {
             state.remoteStream = action.payload
         },
+        breakStream: {
+            reducer: (state, action: PayloadAction<MediaProvider>) => {
+                state.stream = undefined
+            },
+            prepare: (payload: MediaProvider, propagate: boolean) => {
+                return { payload, meta: { propagate } }
+            },
+        },
     },
 })
 
-export const { movePlayer, setAvatar, setStream, setRemoteStream } =
-    boardSlice.actions
+export const {
+    movePlayer,
+    setAvatar,
+    setStream,
+    setRemoteStream,
+    breakStream,
+} = boardSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type
 // export const selectCount = (state: RootState) => state.slidesApp.value

@@ -16,6 +16,8 @@ const VideoChat: FC = () => {
     const localStream = useAppSelector((state) => state.stream)
     const remoteStream = useAppSelector((state) => state.remoteStream)
 
+    const distance = useAppSelector((state) => state.distance)
+
     const gotStream = (stream: MediaProvider) => {
         localVideoRef.current.srcObject = stream
         return stream
@@ -24,14 +26,6 @@ const VideoChat: FC = () => {
         remoteVideoRef.current.srcObject = remoteStream
         return remoteStream
     }
-    useEffect(() => {
-        console.log(remoteStream)
-
-        gotRemoteStream(remoteStream)
-    }, [remoteStream])
-    useEffect(() => {
-        gotStream(localStream)
-    }, [localStream])
 
     const start = async () => {
         const videoStream = await navigator.mediaDevices
@@ -60,6 +54,23 @@ const VideoChat: FC = () => {
     const cut = () => {
         dispatch(breakStream(localStream, true))
     }
+
+    useEffect(() => {
+        console.log(remoteStream)
+
+        gotRemoteStream(remoteStream)
+    }, [remoteStream])
+    useEffect(() => {
+        gotStream(localStream)
+    }, [localStream])
+    useEffect(() => {
+        if (distance < 2) {
+            call()
+        } else if (distance > 5) {
+            cut()
+        }
+    }, [distance])
+
     return (
         <>
             <div>
@@ -84,12 +95,6 @@ const VideoChat: FC = () => {
                     </video>
                 </div>
             </div>
-            <button className="bg-coolGray-800" onClick={() => call()}>
-                start
-            </button>
-            <button className="bg-coolGray-800" onClick={() => cut()}>
-                end
-            </button>
         </>
     )
 }

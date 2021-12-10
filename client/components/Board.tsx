@@ -2,7 +2,7 @@
 import * as React from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../store'
-import { movePlayer } from '../slices/boardSlice'
+import { calculDistance, movePlayer } from '../slices/boardSlice'
 import { useAppSelector } from '../hooks'
 import samplemap from '../img/samplemap_16.png'
 import alex from '../img/Alex.png'
@@ -59,6 +59,7 @@ export const Board: React.FC = () => {
             }
             // console.log(newPosition)
             dispatch(movePlayer({ position: newPosition, local: true }, true))
+            dispatch(calculDistance())
         },
         [playerPosition]
     )

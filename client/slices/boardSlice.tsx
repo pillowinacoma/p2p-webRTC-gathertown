@@ -13,6 +13,7 @@ interface AppState {
     }
     stream: MediaProvider
     remoteStream: MediaProvider
+    distance: number
 }
 
 // Define the initial state using that type
@@ -28,6 +29,7 @@ const initialState: AppState = {
     },
     stream: undefined,
     remoteStream: undefined,
+    distance: 1000,
 }
 
 export const boardSlice = createSlice({
@@ -84,6 +86,15 @@ export const boardSlice = createSlice({
                 return { payload, meta: { propagate } }
             },
         },
+        calculDistance: (state) => {
+            state.distance =
+                Math.abs(
+                    state.playerPosition[0] - state.remotePlayerPosition[0]
+                ) +
+                Math.abs(
+                    state.playerPosition[1] - state.remotePlayerPosition[1]
+                )
+        },
     },
 })
 
@@ -93,6 +104,7 @@ export const {
     setStream,
     setRemoteStream,
     breakStream,
+    calculDistance,
 } = boardSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type

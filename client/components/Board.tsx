@@ -15,6 +15,8 @@ import VideoChat from './VideoChat'
 
 export const Board: React.FC = () => {
     const board = useAppSelector((state) => state.board)
+    const position = useAppSelector((state) => state.playerPosition)
+    const remotePosition = useAppSelector((state) => state.remotePlayerPosition)
     const playerPosition: [number, number] = useAppSelector(
         (state) => state.playerPosition
     )
@@ -59,7 +61,6 @@ export const Board: React.FC = () => {
             }
             // console.log(newPosition)
             dispatch(movePlayer({ position: newPosition, local: true }, true))
-            dispatch(calculDistance())
         },
         [playerPosition]
     )
@@ -130,6 +131,9 @@ export const Board: React.FC = () => {
             window.removeEventListener('keydown', keyDownHandler)
         }
     }, [keyDownHandler])
+    useEffect(() => {
+        dispatch(calculDistance())
+    }, [position, remotePosition])
 
     return (
         <div className="flex flex-row space-x-2">

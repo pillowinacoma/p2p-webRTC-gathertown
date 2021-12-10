@@ -52,7 +52,7 @@ const VideoChat: FC = () => {
         setHangup(true)
     }
     const cut = () => {
-        dispatch(breakStream(localStream, true))
+        localStream && dispatch(breakStream(localStream, true))
     }
 
     useEffect(() => {

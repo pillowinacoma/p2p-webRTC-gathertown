@@ -14,60 +14,52 @@ const { SocketAddress } = require('net')
 const DIST_DIR = path.join(__dirname, '../dist')
 const HTML_FILE = path.join(DIST_DIR, 'index.html')
 
-const mockResponse = {
-    foo: 'bar',
-    bar: 'foo',
-}
 app.get('/api', (req, res) => {
-    res.send(mockResponse)
+    res.send({
+        message: 'Hello World',
+    })
 })
 app.get('/', (req, res) => {
     res.sendFile(HTML_FILE)
 })
 app.use(express.static(DIST_DIR))
 
+const peers = new Map()
+
 io.on('connection', function (socket) {
-    const keys = [...io.sockets.sockets.keys()]
-    const connected = [...io.sockets.sockets.values()]
-        .filter((x) => x.connected)
-        .map((x) => x.id)
+    console.log(`client ${socket.id} is connected`)
 
-    const peersToAdvertise = connected
-        .filter((x) => x !== socket.id)
-        .map((x) => io.sockets.sockets.get(x))
+    peers.set(socket.id, socket)
+    console.log('PEERS', peers.keys())
 
-    console.log(
-        'advertising peers',
-        peersToAdvertise.map((x) => x.id)
-    )
+    for (const [peerId, peerSocket] of peers) {
+        if (peerId === socket.id) continue
+        console.log(`init receive to ${socket.id}`)
+        peerSocket.emit('initReceive', socket.id)
+    }
 
-    peersToAdvertise.forEach(function (socket2) {
-        console.log('Advertising peer %s to %s', socket.id, socket2.id)
-        socket2.emit('peer', {
-            peerId: socket.id,
-            initiator: true,
-        })
-        socket.emit('peer', {
-            peerId: socket2.id,
-            initiator: false,
-        })
+    socket.on('initSend', (initSocketId) => {
+        console.log(`init send by ${socket.id} for ${initSocketId}`)
+        peers.get(initSocketId).emit('initSend', socket.id)
     })
 
     socket.on('signal', (data) => {
-        // const socket2 = io.sockets.connected[data.peerId]
-        const socket2 = io.sockets.sockets.get(data.peerId)
+        const { socketId, signal } = data
+        console.log(`sending signal from ${socket.id} to ${socketId}`)
 
-        if (!socket2) {
-            return
-        }
-        console.log('Proxying signal from peer %s to %s', socket.id, socket2.id)
+        if (!peers.get(socketId)) return
 
-        io.to(socket2.id).emit('signal', {
-            signal: data.signal,
-            peerId: socket.id,
+        peers.get(socketId).emit('signal', {
+            socketId: socket.id,
+            signal,
         })
     })
-    console.log(connected)
+
+    socket.on('disconnect', () => {
+        console.log(`client ${socket.id} disconnected`)
+        socket.broadcast.emit('removePeer', socket.id)
+        peers.delete(socket.id)
+    })
 })
 
 server.listen(port, function () {

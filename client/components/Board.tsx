@@ -1,32 +1,30 @@
-/* eslint-disable no-fallthrough */
-import * as React from 'react'
+import React, {
+    ReactElement,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../store'
-import { calculDistance, movePlayer } from '../slices/boardSlice'
+import { movePlayer } from '../slices/boardSlice'
 import { useAppSelector } from '../hooks'
 import samplemap from '../img/samplemap_16.png'
 import alex from '../img/Alex.png'
 import bob from '../img/Bob.png'
 import adam from '../img/Adam.png'
 import amelia from '../img/Amelia.png'
-import { useCallback, useEffect } from 'react'
 import { AvatarPicker } from './AvatarPicker'
-import VideoChat from './VideoChat'
+import VideoBar from './VideoBar'
 
 export const Board: React.FC = () => {
     const board = useAppSelector((state) => state.board)
     const position = useAppSelector((state) => state.playerPosition)
-    const remotePosition = useAppSelector((state) => state.remotePlayerPosition)
-    const playerPosition: [number, number] = useAppSelector(
-        (state) => state.playerPosition
-    )
-    const remotePlayerPosition: [number, number] = useAppSelector(
-        (state) => state.remotePlayerPosition
-    )
-    const playerAvatar: string = useAppSelector((state) => state.playerAvatar)
-    const remotePlayerAvatar: string = useAppSelector(
-        (state) => state.remotePlayerAvatar
-    )
+    const playerPosition = useAppSelector((state) => state.playerPosition)
+    const remotePositions = useAppSelector((state) => state.remotePositions)
+    const playerAvatar = useAppSelector((state) => state.playerAvatar)
+    const remoteAvatars = useAppSelector((state) => state.remoteAvatars)
+    const [grid, setGrid] = useState([])
 
     const dispatch = useDispatch<AppDispatch>()
 
@@ -60,7 +58,7 @@ export const Board: React.FC = () => {
                 ]
             }
             // console.log(newPosition)
-            dispatch(movePlayer({ position: newPosition, local: true }, true))
+            dispatch(movePlayer({ position: newPosition }, true))
         },
         [playerPosition]
     )
@@ -81,6 +79,12 @@ export const Board: React.FC = () => {
         textAlign: 'center' as const,
     }
 
+    const localVideoStyle = {
+        position: 'absolute' as const,
+        width: '10em' as const,
+        zIndex: '100' as const,
+    }
+
     const avatarImg = (name: string) => {
         switch (name) {
             case 'Adam':
@@ -99,31 +103,30 @@ export const Board: React.FC = () => {
         return ''
     }
 
-    const displayPlayers = () => {
-        let i = 0
+    useEffect(() => {
         const grid = []
-        for (i = 0; i < board.width * board.height; i++) {
-            if (i === playerPosition[1] * board.width + playerPosition[0]) {
-                grid.push(
-                    <div style={cellStyle} key={i}>
-                        <img src={avatarImg(playerAvatar)}></img>
-                    </div>
-                )
-            } else if (
-                i ===
-                remotePlayerPosition[1] * board.width + remotePlayerPosition[0]
-            ) {
-                grid.push(
-                    <div style={cellStyle} key={i}>
-                        <img src={avatarImg(remotePlayerAvatar)}></img>
-                    </div>
-                )
-            } else {
-                grid.push(<div style={cellStyle} key={i}></div>)
-            }
+
+        for (let i = 0; i < board.width * board.height; i++) {
+            grid.push(<div style={cellStyle} key={i}></div>)
         }
-        return grid
-    }
+
+        const posIdx = playerPosition[1] * board.width + playerPosition[0]
+        grid[posIdx] = (
+            <div style={cellStyle} key={posIdx}>
+                <img src={avatarImg(playerAvatar)}></img>
+            </div>
+        )
+
+        Object.entries(remotePositions).forEach(([peerId, position]) => {
+            const i = position[1] * board.width + position[0]
+            grid[i] = (
+                <div style={cellStyle} key={i}>
+                    <img src={avatarImg(remoteAvatars[peerId])}></img>
+                </div>
+            )
+        })
+        setGrid(grid)
+    }, [remotePositions, remoteAvatars, playerPosition, playerAvatar])
 
     useEffect(() => {
         window.addEventListener('keydown', keyDownHandler)
@@ -131,19 +134,19 @@ export const Board: React.FC = () => {
             window.removeEventListener('keydown', keyDownHandler)
         }
     }, [keyDownHandler])
-    useEffect(() => {
-        dispatch(calculDistance())
-    }, [position, remotePosition])
+    // useEffect(() => {
+    //     dispatch(calculDistance())
+    // }, [position, remotePosition])
 
     return (
         <div className="flex flex-row space-x-2">
             <div className="flew-grow-0" style={boardStyle}>
-                {displayPlayers()}
+                {grid}
             </div>
             <div className="flex-grow-0 flex-col space-y-2">
                 <AvatarPicker></AvatarPicker>
                 <div className="item h-48">
-                    <VideoChat />
+                    <VideoBar />
                 </div>
             </div>
         </div>

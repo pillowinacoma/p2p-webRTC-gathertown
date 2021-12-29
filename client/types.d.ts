@@ -13,12 +13,17 @@ interface Participant {
 
 interface movePlayerAction {
     position: [number, number]
-    local: boolean
+    peerId?: string
 }
 
 interface setAvatarAction {
     avatar: string
-    local: boolean
+    peerId?: string
+}
+
+interface setRemoteStreamAction {
+    stream: MediaStream
+    peerId: string
 }
 
 interface genAction<T, P> {

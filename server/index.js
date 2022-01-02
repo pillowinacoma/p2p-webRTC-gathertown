@@ -27,25 +27,25 @@ app.use(express.static(DIST_DIR))
 const peers = new Map()
 
 io.on('connection', function (socket) {
-    console.log(`client ${socket.id} is connected`)
+    // console.log(`client ${socket.id} is connected`)
 
     peers.set(socket.id, socket)
     console.log('PEERS', peers.keys())
 
     for (const [peerId, peerSocket] of peers) {
         if (peerId === socket.id) continue
-        console.log(`init receive to ${socket.id}`)
+        // console.log(`init receive to ${socket.id}`)
         peerSocket.emit('initReceive', socket.id)
     }
 
     socket.on('initSend', (initSocketId) => {
-        console.log(`init send by ${socket.id} for ${initSocketId}`)
+        // console.log(`init send by ${socket.id} for ${initSocketId}`)
         peers.get(initSocketId).emit('initSend', socket.id)
     })
 
     socket.on('signal', (data) => {
         const { socketId, signal } = data
-        console.log(`sending signal from ${socket.id} to ${socketId}`)
+        // console.log(`sending signal from ${socket.id} to ${socketId}`)
 
         if (!peers.get(socketId)) return
 
@@ -56,7 +56,7 @@ io.on('connection', function (socket) {
     })
 
     socket.on('disconnect', () => {
-        console.log(`client ${socket.id} disconnected`)
+        // console.log(`client ${socket.id} disconnected`)
         socket.broadcast.emit('removePeer', socket.id)
         peers.delete(socket.id)
     })

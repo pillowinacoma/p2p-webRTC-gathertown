@@ -33,3 +33,4 @@ interface genAction<T, P> {
 type restructuredData =
     | genAction<'movePlayer', movePlayerAction>
     | genAction<'setAvatar', setAvatarAction>
+    | genAction<'askForStream', never>

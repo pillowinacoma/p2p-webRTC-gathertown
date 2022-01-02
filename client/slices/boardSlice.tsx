@@ -11,9 +11,11 @@ interface AppState {
         height: number
         tiles: Tile[]
     }
-    stream: MediaProvider
-    remoteStreams: { [key: string]: MediaProvider }
-    distance: number
+    stream: MediaStream
+    remoteStreams: { [key: string]: MediaStream }
+    distances: { [key: string]: number }
+    peersToCall: string[]
+    peersToStay: string[]
 }
 
 // Define the initial state using that type
@@ -29,7 +31,9 @@ const initialState: AppState = {
     },
     stream: undefined,
     remoteStreams: {},
-    distance: 1000,
+    distances: {},
+    peersToCall: [],
+    peersToStay: [],
 }
 
 export const boardSlice = createSlice({
@@ -71,11 +75,11 @@ export const boardSlice = createSlice({
             },
         },
         setStream: {
-            reducer: (state, action: PayloadAction<MediaProvider>) => {
+            reducer: (state, action: PayloadAction<MediaStream>) => {
                 state.stream = action.payload
                 return state
             },
-            prepare: (payload: MediaProvider, propagate: boolean) => {
+            prepare: (payload: MediaStream, propagate: boolean) => {
                 return { payload, meta: { propagate } }
             },
         },
@@ -87,22 +91,33 @@ export const boardSlice = createSlice({
             state.remoteStreams[peerId] = stream
         },
         breakStream: {
-            reducer: (state, action: PayloadAction<MediaProvider>) => {
+            reducer: (state, action: PayloadAction<MediaStream>) => {
                 state.stream = undefined
             },
-            prepare: (payload: MediaProvider, propagate: boolean) => {
+            prepare: (payload: MediaStream, propagate: boolean) => {
                 return { payload, meta: { propagate } }
             },
         },
-        // calculDistance: (state) => {
-        // state.distance =
-        // Math.abs(
-        //     state.playerPosition[0] - state.remotePlayerPosition[0]
-        // ) +
-        // Math.abs(
-        //     state.playerPosition[1] - state.remotePlayerPosition[1]
-        // )
-        // },
+        calculDistance: (state) => {
+            const tmp = Object.entries(state.remotePositions).map(
+                ([peerId, position]) => {
+                    const res: { [key: string]: number } = {}
+                    res[peerId] =
+                        Math.abs(state.playerPosition[0] - position[0]) +
+                        Math.abs(state.playerPosition[1] - position[1])
+                    return res
+                }
+            )
+            state.distances = Object.assign({}, ...tmp)
+
+            state.peersToCall = Object.entries(state.distances)
+                .filter(([_, distance]) => distance < 2)
+                .map(([peerId]) => peerId)
+
+            state.peersToStay = Object.entries(state.distances)
+                .filter(([_, distance]) => distance < 5)
+                .map(([peerId]) => peerId)
+        },
     },
 })
 
@@ -112,7 +127,7 @@ export const {
     setStream,
     setRemoteStream,
     breakStream,
-    // calculDistance,
+    calculDistance,
 } = boardSlice.actions
 
 // Other code such as selectors can use the imported `RootState` type

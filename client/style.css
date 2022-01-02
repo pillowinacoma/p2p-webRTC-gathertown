@@ -3,12 +3,8 @@
 @tailwind utilities;
 
 .item {
-    @apply bg-rose-500
+    @apply bg-lightBlue-900
 		text-gray-100
-		min-w-full
-		min-h-full
-		h-12
-		w-12
 		rounded;
 }
 

@@ -1,13 +1,7 @@
-import React, {
-    ReactElement,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-} from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../store'
-import { movePlayer } from '../slices/boardSlice'
+import { calculDistance, movePlayer } from '../slices/boardSlice'
 import { useAppSelector } from '../hooks'
 import samplemap from '../img/samplemap_16.png'
 import alex from '../img/Alex.png'
@@ -19,39 +13,41 @@ import VideoBar from './VideoBar'
 
 export const Board: React.FC = () => {
     const board = useAppSelector((state) => state.board)
-    const position = useAppSelector((state) => state.playerPosition)
     const playerPosition = useAppSelector((state) => state.playerPosition)
     const remotePositions = useAppSelector((state) => state.remotePositions)
     const playerAvatar = useAppSelector((state) => state.playerAvatar)
     const remoteAvatars = useAppSelector((state) => state.remoteAvatars)
+    const distances = useAppSelector((state) => state.distances)
     const [grid, setGrid] = useState([])
 
     const dispatch = useDispatch<AppDispatch>()
 
     const keyDownHandler = useCallback(
-        (event) => {
-            // console.log(event.code)
-            // console.log(playerPosition)
+        (event: KeyboardEvent) => {
             let newPosition = playerPosition
             if (event.code === 'ArrowUp') {
+                event.preventDefault()
                 newPosition = [
                     playerPosition[0],
                     (playerPosition[1] - 1) % board.width,
                 ]
             }
             if (event.code === 'ArrowDown') {
+                event.preventDefault()
                 newPosition = [
                     playerPosition[0],
                     (playerPosition[1] + 1) % board.width,
                 ]
             }
             if (event.code === 'ArrowLeft') {
+                event.preventDefault()
                 newPosition = [
                     (playerPosition[0] - 1) % board.width,
                     playerPosition[1],
                 ]
             }
             if (event.code === 'ArrowRight') {
+                event.preventDefault()
                 newPosition = [
                     (playerPosition[0] + 1) % board.width,
                     playerPosition[1],
@@ -63,26 +59,23 @@ export const Board: React.FC = () => {
         [playerPosition]
     )
 
+    const tileWidth = Math.floor(window.innerHeight / 60)
+
     const boardStyle = {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(60, 16px)' as const,
-        gridTemplateRows: 'repeat(60, 16px)' as const,
-        gridColumnGap: '0px' as const,
-        gridRowGap: '0px' as const,
-        backgroundImage: 'url(' + samplemap + ')',
-        backgroundRepeat: 'no-repeat' as const,
+        display: `grid`,
+        gridTemplateColumns: `repeat(60, ${tileWidth}px)` as const,
+        gridTemplateRows: `repeat(60, ${tileWidth}px)` as const,
+        gridColumnGap: `0px` as const,
+        gridRowGap: `0px` as const,
+        backgroundImage: `url(` + samplemap + `)`,
+        backgroundSize: `${60 * tileWidth}px` as const,
+        backgroundRepeat: `no-repeat` as const,
     }
 
     const cellStyle = {
-        width: '16px',
-        padding: '0px',
-        textAlign: 'center' as const,
-    }
-
-    const localVideoStyle = {
-        position: 'absolute' as const,
-        width: '10em' as const,
-        zIndex: '100' as const,
+        width: `${tileWidth}px`,
+        padding: `0px`,
+        textAlign: `center` as const,
     }
 
     const avatarImg = (name: string) => {
@@ -134,21 +127,18 @@ export const Board: React.FC = () => {
             window.removeEventListener('keydown', keyDownHandler)
         }
     }, [keyDownHandler])
-    // useEffect(() => {
-    //     dispatch(calculDistance())
-    // }, [position, remotePosition])
+
+    useEffect(() => {
+        dispatch(calculDistance())
+    }, [playerPosition, remotePositions])
 
     return (
-        <div className="flex flex-row space-x-2">
-            <div className="flew-grow-0" style={boardStyle}>
+        <div className="flex flex-row h">
+            <AvatarPicker />
+            <div className="p-0 m-0" style={boardStyle}>
                 {grid}
             </div>
-            <div className="flex-grow-0 flex-col space-y-2">
-                <AvatarPicker></AvatarPicker>
-                <div className="item h-48">
-                    <VideoBar />
-                </div>
-            </div>
+            <VideoBar />
         </div>
     )
 }

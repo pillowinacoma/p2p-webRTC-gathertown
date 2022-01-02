@@ -47,7 +47,7 @@ const addPeer = (socketId: string, initiator: boolean) => {
         const stream = store.getState().stream
         store.dispatch(setAvatar({ avatar }, true))
         store.dispatch(movePlayer({ position }, true))
-        store.dispatch(setStream(stream, true))
+        stream && store.dispatch(setStream(stream, true))
     })
     peer.on('error', (err) =>
         console.log(`Error sending data to peer : ${err}`)
@@ -55,14 +55,7 @@ const addPeer = (socketId: string, initiator: boolean) => {
     peer.on('data', (data) => {
         const restructuredData: restructuredData = JSON.parse(data)
         const { type, payload } = restructuredData
-
-        console.log(
-            {
-                avatar: (<setAvatarAction>payload).avatar,
-                peerId: socketId,
-            },
-            false
-        )
+        const stream = store.getState().stream
 
         switch (type) {
             case 'movePlayer':
@@ -87,9 +80,17 @@ const addPeer = (socketId: string, initiator: boolean) => {
                     )
                 )
                 break
+            case 'askForStream':
+                // stream && store.dispatch(setStream(stream, true))
+                break
         }
     })
     peer.on('stream', (stream) => {
+        stream.addEventListener('inactive', () =>
+            store.dispatch(
+                setRemoteStream({ stream: undefined, peerId: socketId })
+            )
+        )
         store.dispatch(setRemoteStream({ stream, peerId: socketId }))
     })
 }
@@ -146,19 +147,27 @@ export const actionMiddleware: Middleware<Dispatch> =
                 if (connectedPeers.size) {
                     switch (reducer) {
                         case 'movePlayer':
-                            connectedPeers.forEach((peer) => peer.send(message))
+                            connectedPeers.forEach((peer, peerId) => {
+                                peer.send(message)
+                                // store.getState().peersToCall.includes(peerId) &&
+                                //     store.getState().stream &&
+                                // !store.getState().remoteStreams[peerId] &&
+                                //     peer.addStream(store.getState().stream)
+                            })
                             break
                         case 'setAvatar':
                             connectedPeers.forEach((peer) => peer.send(message))
                             break
                         case 'setStream':
                             connectedPeers.forEach((peer) => {
-                                console.log(peer)
-                                peer.addStream(payload)
+                                !store.getState().remoteStreams[peerId] &&
+                                    peer.addStream(payload)
                             })
                             break
                         case 'breakStream':
-                            // connectedPeers.get(peerId).removeStream(payload)
+                            connectedPeers.forEach((peer) =>
+                                peer.removeStream(payload)
+                            )
                             break
                     }
                 }

@@ -27,7 +27,7 @@ export const AvatarPicker: React.FC = () => {
     )
 
     return (
-        <div className="flex flex-row space-x-2 w-48 h-12" id="avatarList">
+        <div className="flex flex-col" id="avatarList">
             <button
                 id="Adam"
                 onClick={avatarSelected}

@@ -42,16 +42,24 @@ const VideoBar: FC = () => {
         gotStream(localStream)
     }, [localStream])
 
-    useEffect(() => {
-        start()
-    }, [localVideoRef])
-
     return (
-        <>
-            <div>
-                <div>
-                    Moi
-                    <video ref={localVideoRef} autoPlay muted>
+        <div className="item flex flex-col w-full">
+            <div className="flex justify-around content-center">
+                <button className="w-full" onClick={() => start()}>
+                    Stream
+                </button>
+                <button className="w-full" onClick={() => cut()}>
+                    Cut
+                </button>
+            </div>
+            <div className="flex flex-col">
+                <div className="h-1/5 content-start h-auto flex justify-center content-center">
+                    <video
+                        className="h-full w-full object-cover"
+                        ref={localVideoRef}
+                        autoPlay
+                        muted
+                    >
                         <track
                             kind="captions"
                             srcLang="en"
@@ -59,18 +67,20 @@ const VideoBar: FC = () => {
                         />
                     </video>
                 </div>
-                <div>
-                    Autrui
-                    {Object.entries(remoteStreams).map(([peerId, stream]) => (
-                        <VideoScreen
-                            peerId={peerId}
-                            stream={stream}
-                            key={`VideoScreen-${peerId}`}
-                        />
-                    ))}
+                <div className="grid grid-cols-3 auto-rows-min h-full">
+                    {Object.entries(remoteStreams).map(
+                        ([peerId, stream], idx) => (
+                            <VideoScreen
+                                shrinkIdx={idx + 1}
+                                peerId={peerId}
+                                stream={stream}
+                                key={`VideoScreen-${peerId}`}
+                            />
+                        )
+                    )}
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 export default VideoBar

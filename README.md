@@ -36,15 +36,18 @@ Ce code est la base du projet avec une map, et un perso qui bouge.
 - [x] Utilisation des hooks
 - [x] Mise en relation des pairs avec simple-peer en utilisant les serveur de signalement avec la technologie WebSockets 
 ### Data
+
 - [x] Les paires peuvent s'envoyer des messages (position, avatar)
 - [x] Utilisation du middleware pour gérer la propagation des messages
 - [x] les participants bougent de manière cohérente
 - [x] Utilisation de redux toolkit pour gérer les connexions en pairs
 ### VideoChat
+
 - [x] Le flux local s'affiche quand on s'approiche d'un participant
 - [x] Les flux remotes s'affichent quand on s'approche des participants remote
 - [x] Fonctionnement sur localhost
 - [x] La connection se ferme correctement quand on quitte le site (le paire est destroyed et supprimé des listes de paires)
+
 
 - [x] Deploiement sur heroku fonctionne
 

@@ -22,7 +22,7 @@ Ce code est la base du projet avec une map, et un perso qui bouge.
 ## Scénario de test idéal : 
 <img src="https://cdn.discordapp.com/attachments/820319024746856509/927677126600179752/Capture_decran_de_2022-01-03_22-36-48.png" />
 
-- aller sur le [site](https://tp3-tiw8.herokuapp.com/) deployé sur heroku ou en local (localhost:4000)
+- aller sur le [site](https://tp3-tiw8.herokuapp.com/) deployé sur heroku ou en local (localhost:4000 par defaut)
 - partager le lien avec vos amis
 - utiliser les flèches pour faire bouger votre avatar pré-selectionné aléatoirement
 - approcher vous à des participants, quand la distance est inferieure à 1, vous etez mis en communication

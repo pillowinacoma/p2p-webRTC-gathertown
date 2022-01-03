@@ -53,6 +53,6 @@ Ce code est la base du projet avec une map, et un perso qui bouge.
 - [x] Gestion de l'audio séparément (l'audio diminue avec la distance avant que la vidéo disparait)
 
 ## Ce qui ne fonctionne pas:
-- [] Quand on fait remove stream, on ne peut pas relancer le stream sur le meme paire, pour cela on a pas mis de bouton qui coupe le stream, mais si l'utilisateur ferme l'onglet, cela coupe son flux et les pairs associés proprement
+- [ ] Quand on fait remove stream, on ne peut pas relancer le stream sur le meme paire, pour cela on a pas mis de bouton qui coupe le stream, mais si l'utilisateur ferme l'onglet, cela coupe son flux et les pairs associés proprement
 
 

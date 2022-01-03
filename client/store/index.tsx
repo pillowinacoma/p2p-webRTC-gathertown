@@ -1,5 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { logger } from 'redux-logger'
 import boardReducer from '../slices/boardSlice'
 import { actionMiddleware } from '../middleware/socketMiddleware'
 

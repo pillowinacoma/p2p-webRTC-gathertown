@@ -19,7 +19,6 @@ export const AvatarPicker: React.FC = () => {
 
     const avatarSelected = useCallback(
         (event) => {
-            // console.log(event)
             const avatar = event.currentTarget.id
             dispatch(setAvatar({ avatar }, true))
         },
@@ -27,7 +26,7 @@ export const AvatarPicker: React.FC = () => {
     )
 
     return (
-        <div className="flex flex-col" id="avatarList">
+        <div className="flex flex-col order-1" id="avatarList">
             <button
                 id="Adam"
                 onClick={avatarSelected}

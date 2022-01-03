@@ -1,35 +1,32 @@
 import { AnyAction, Dispatch, Middleware } from 'redux'
 import * as io from 'socket.io-client'
-import SimplePeer, { SignalData } from 'simple-peer'
+import SimplePeer, { Instance, SignalData } from 'simple-peer'
+import { toPairs } from 'lodash'
 import { store } from '../store'
 import {
     movePlayer,
     setAvatar,
     setRemoteStream,
-    setStream,
+    addPeer as ap,
+    removePeer as rp,
 } from '../slices/boardSlice'
+import { movePlayerAction, setAvatarAction, restructuredData } from '../types'
 
 const socket = io.connect()
 const useTrickle = true
-const connectedPeers = new Map<string, SimplePeer.Instance>()
-let peerId: string
 
 const addPeer = (socketId: string, initiator: boolean) => {
-    connectedPeers.set(
-        socketId,
-        new SimplePeer({
-            initiator,
-            trickle: useTrickle, // useTrickle doit être a true pour que le peer persiste
-            config: {
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
-                ],
-            },
-        })
-    )
+    const peer = new SimplePeer({
+        initiator,
+        trickle: useTrickle, // useTrickle doit être a true pour que le peer persiste
+        config: {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
+            ],
+        },
+    })
 
-    const peer = connectedPeers.get(socketId)
     // console.log('PEERS', connectedPeers.keys())
 
     peer.on('signal', (signal) => {
@@ -44,10 +41,8 @@ const addPeer = (socketId: string, initiator: boolean) => {
         console.log(`Peer connection established`)
         const avatar = store.getState().playerAvatar
         const position = store.getState().playerPosition
-        const stream = store.getState().stream
-        store.dispatch(setAvatar({ avatar }, true))
+        avatar && store.dispatch(setAvatar({ avatar }, true))
         store.dispatch(movePlayer({ position }, true))
-        stream && store.dispatch(setStream(stream, true))
     })
     peer.on('error', (err) =>
         console.log(`Error sending data to peer : ${err}`)
@@ -55,7 +50,6 @@ const addPeer = (socketId: string, initiator: boolean) => {
     peer.on('data', (data) => {
         const restructuredData: restructuredData = JSON.parse(data)
         const { type, payload } = restructuredData
-        const stream = store.getState().stream
 
         switch (type) {
             case 'movePlayer':
@@ -80,9 +74,6 @@ const addPeer = (socketId: string, initiator: boolean) => {
                     )
                 )
                 break
-            case 'askForStream':
-                // stream && store.dispatch(setStream(stream, true))
-                break
         }
     })
     peer.on('stream', (stream) => {
@@ -93,11 +84,12 @@ const addPeer = (socketId: string, initiator: boolean) => {
         )
         store.dispatch(setRemoteStream({ stream, peerId: socketId }))
     })
+
+    store.dispatch(ap({ peerId: socketId, peer }))
 }
 
 const removePeer = (socketId: string) => {
-    connectedPeers.get(socketId)?.destroy()
-    connectedPeers.delete(socketId)
+    store.dispatch(rp(socketId, true))
 }
 
 socket.on('connect', () => {
@@ -115,10 +107,14 @@ socket.on('initSend', (socketId) => {
     addPeer(socketId, true)
 })
 
-socket.on('signal', (data: { socketId: string; signal: any }) => {
-    const { socketId, signal } = data
-    connectedPeers.get(socketId).signal(signal)
-})
+socket.on(
+    'signal',
+    (data: { socketId: string; signal: SimplePeer.SignalData }) => {
+        const connectedPeers = store.getState().peers
+        const { socketId, signal } = data
+        connectedPeers[socketId].signal(signal)
+    }
+)
 
 socket.on('removePeer', (socketId) => {
     console.log(`REMOVE PEER ${socketId}`)
@@ -126,8 +122,9 @@ socket.on('removePeer', (socketId) => {
 })
 
 socket.on('disconnect', () => {
+    const connectedPeers = store.getState().remote
     console.log(`DISCONNECTED`)
-    connectedPeers.forEach((_, peerId) => {
+    Object.entries(connectedPeers).forEach(([peerId]) => {
         removePeer(peerId)
     })
 })
@@ -136,6 +133,7 @@ export const actionMiddleware: Middleware<Dispatch> =
     () => (next) => (action: AnyAction) => {
         const { meta, type, payload } = action
         const [sliceName, reducer] = type.split('/')
+        const peers = store.getState().peers
 
         if (meta?.propagate) {
             if (sliceName === 'board') {
@@ -144,32 +142,17 @@ export const actionMiddleware: Middleware<Dispatch> =
                     payload,
                 })
 
-                if (connectedPeers.size) {
-                    switch (reducer) {
-                        case 'movePlayer':
-                            connectedPeers.forEach((peer, peerId) => {
-                                peer.send(message)
-                                // store.getState().peersToCall.includes(peerId) &&
-                                //     store.getState().stream &&
-                                // !store.getState().remoteStreams[peerId] &&
-                                //     peer.addStream(store.getState().stream)
-                            })
-                            break
-                        case 'setAvatar':
-                            connectedPeers.forEach((peer) => peer.send(message))
-                            break
-                        case 'setStream':
-                            connectedPeers.forEach((peer) => {
-                                !store.getState().remoteStreams[peerId] &&
-                                    peer.addStream(payload)
-                            })
-                            break
-                        case 'breakStream':
-                            connectedPeers.forEach((peer) =>
-                                peer.removeStream(payload)
-                            )
-                            break
-                    }
+                switch (reducer) {
+                    case 'movePlayer':
+                        toPairs(peers).forEach(([_, peer]) => {
+                            peer.send(message)
+                        })
+                        break
+                    case 'setAvatar':
+                        toPairs(peers).forEach(([_, peer]) =>
+                            peer.send(message)
+                        )
+                        break
                 }
             }
         }

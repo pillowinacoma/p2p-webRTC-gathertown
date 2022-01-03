@@ -1,3 +1,4 @@
+import { mapValues } from 'lodash'
 import React, { FC, MutableRefObject, useEffect, useRef } from 'react'
 import { useDispatch } from 'react-redux'
 import { useAppSelector } from '../hooks'
@@ -10,8 +11,11 @@ const VideoBar: FC = () => {
 
     const dispatch = useDispatch<AppDispatch>()
     const localStream = useAppSelector((state) => state.stream)
-    const remoteStreams = useAppSelector((state) => state.remoteStreams)
-
+    const connectedTo = useAppSelector((state) => state.connectedTo)
+    const distances = useAppSelector((state) => state.distances)
+    const remoteStreams = useAppSelector((state) =>
+        mapValues(state.remote, ({ stream }) => stream)
+    )
     const gotStream = (stream: MediaProvider) => {
         if (localVideoRef.current) {
             localVideoRef.current.srcObject = stream
@@ -43,42 +47,33 @@ const VideoBar: FC = () => {
     }, [localStream])
 
     return (
-        <div className="item flex flex-col w-full">
-            <div className="flex justify-around content-center">
-                <button className="w-full" onClick={() => start()}>
-                    Stream
-                </button>
-                <button className="w-full" onClick={() => cut()}>
-                    Cut
-                </button>
+        <div className="item flex flex-col w-full order-3 flex-shrink">
+            <div className="h-1/3 content-start w-full flex justify-center">
+                <video
+                    className="h-full w-full object-cover"
+                    ref={localVideoRef}
+                    autoPlay
+                    muted
+                >
+                    <track
+                        kind="captions"
+                        srcLang="en"
+                        label="english_captions"
+                    />
+                </video>
             </div>
-            <div className="flex flex-col">
-                <div className="h-1/5 content-start h-auto flex justify-center content-center">
-                    <video
-                        className="h-full w-full object-cover"
-                        ref={localVideoRef}
-                        autoPlay
-                        muted
-                    >
-                        <track
-                            kind="captions"
-                            srcLang="en"
-                            label="english_captions"
-                        />
-                    </video>
-                </div>
-                <div className="grid grid-cols-3 auto-rows-min h-full">
-                    {Object.entries(remoteStreams).map(
-                        ([peerId, stream], idx) => (
+            <div className="grid grid-cols-3 auto-rows-min overflow-y-auto">
+                {Object.entries(remoteStreams).map(
+                    ([peerId, stream], idx) =>
+                        connectedTo[peerId] && (
                             <VideoScreen
-                                shrinkIdx={idx + 1}
                                 peerId={peerId}
                                 stream={stream}
                                 key={`VideoScreen-${peerId}`}
+                                distance={distances[peerId]}
                             />
                         )
-                    )}
-                </div>
+                )}
             </div>
         </div>
     )

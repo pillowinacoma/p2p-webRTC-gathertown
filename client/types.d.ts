@@ -1,3 +1,5 @@
+import SimplePeer from 'simple-peer'
+
 interface Tile {
     type: string
 }
@@ -26,6 +28,11 @@ interface setRemoteStreamAction {
     peerId: string
 }
 
+interface remotePlayer {
+    stream?: MediaStream
+    currentlyStreamingTo?: boolean
+}
+
 interface genAction<T, P> {
     type: T
     payload: P
@@ -33,4 +40,4 @@ interface genAction<T, P> {
 type restructuredData =
     | genAction<'movePlayer', movePlayerAction>
     | genAction<'setAvatar', setAvatarAction>
-    | genAction<'askForStream', never>
+    | genAction<'removeStream', string>
